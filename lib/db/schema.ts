@@ -61,3 +61,14 @@ export const campaignState = sqliteTable("campaign_state", {
 });
 
 export type CampaignStateRow = typeof campaignState.$inferSelect;
+
+export const improvements = sqliteTable("improvements", {
+  id: text("id").primaryKey(),
+  createdAt: text("created_at").notNull(),
+  title: text("title").notNull(),
+  body: text("body").notNull(),
+  basis: text("basis"),
+  status: text("status").notNull().default("proposed"),
+});
+
+export type ImprovementRow = typeof improvements.$inferSelect;

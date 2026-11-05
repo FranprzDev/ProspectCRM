@@ -1,179 +1,85 @@
 import Link from "next/link";
 import {
-  ProspectStatus,
-  prospectCategoryLabels,
-  ProspectCategory,
   prospectStatusBadgeClass,
   prospectStatusLabels,
   prospectStatusOrder,
-  WebsiteStatus,
   websiteStatusLabels,
+  WebsiteStatus,
 } from "@/lib/domain/enums";
-import {
-  getPipelineSummary,
-  listProspectRows,
-} from "@/lib/services/prospect-service";
+import { listProspectRows } from "@/lib/services/prospect-service";
+import { formatRelative } from "@/lib/format";
+import type { ProspectRow } from "@/lib/db/schema";
 
 export const dynamic = "force-dynamic";
 
-export default async function ProspectsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{
-    status?: string;
-    search?: string;
-    web?: string;
-    demo?: string;
-    category?: string;
-  }>;
-}) {
-  const { status, search, web, demo, category } = await searchParams;
-  const validStatus = Object.values(ProspectStatus).find((s) => s === status);
-  const validWeb = Object.values(WebsiteStatus).find((w) => w === web);
-  const hasDemo = demo === "1";
-  const [prospects, summary] = await Promise.all([
-    listProspectRows(validStatus, search, {
-      websiteStatus: validWeb,
-      hasDemo: hasDemo || undefined,
-      category,
-    }),
-    getPipelineSummary(),
-  ]);
-
-  function webHref(target?: WebsiteStatus): string {
-    const params = new URLSearchParams();
-    if (validStatus) params.set("status", validStatus);
-    if (search) params.set("search", search);
-    if (target) params.set("web", target);
-    const query = params.toString();
-    return query === "" ? "/prospects" : `/prospects?${query}`;
+export default async function ProspectsPage() {
+  const rows = await listProspectRows();
+  const byStatus = new Map<string, ProspectRow[]>();
+  for (const status of prospectStatusOrder) byStatus.set(status, []);
+  for (const row of rows) {
+    const list = byStatus.get(row.status) ?? [];
+    list.push(row);
+    byStatus.set(row.status, list);
   }
-  const stats = [
-    { label: "Nuevos", count: summary.counts[ProspectStatus.New] ?? 0 },
-    { label: "Contactados", count: summary.counts[ProspectStatus.Contacted] ?? 0 },
-    { label: "En cierre", count: summary.counts[ProspectStatus.Closing] ?? 0 },
-    { label: "Ganados", count: summary.counts[ProspectStatus.Won] ?? 0 },
-  ];
-
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-4 gap-2">
-        {stats.map((stat) => (
-          <div
-            key={stat.label}
-            className="rounded-[10px] border border-stone-300 bg-[#212429] px-3 py-2"
-          >
-            <p className="text-lg font-bold leading-tight tabular-nums">
-              {stat.count}
-            </p>
-            <p className="text-xs text-stone-500">{stat.label}</p>
-          </div>
-        ))}
-      </div>
-      <form method="get" className="flex gap-2">
-        {validStatus && <input type="hidden" name="status" value={validStatus} />}
-        <input
-          type="search"
-          name="search"
-          defaultValue={search ?? ""}
-          placeholder="Buscar prospecto"
-          className="w-full rounded-md border border-stone-300 px-3 py-2.5 text-base focus:border-indigo-500 focus:outline-none"
-        />
-        <button
-          type="submit"
-          className="rounded-md bg-stone-800 px-4 py-2.5 text-sm font-semibold text-[#17191c]"
-        >
-          Buscar
-        </button>
-      </form>
-      <div className="flex flex-wrap gap-2">
-        <Link
-          href={webHref(undefined)}
-          className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-            !validWeb ? "bg-stone-800 text-[#17191c]" : "bg-stone-200 text-stone-700"
-          }`}
-        >
-          Todas las webs
-        </Link>
-        {Object.values(WebsiteStatus).map((w) => (
-          <Link
-            key={w}
-            href={webHref(w)}
-            className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-              validWeb === w
-                ? "bg-stone-800 text-[#17191c]"
-                : "bg-stone-200 text-stone-700"
-            }`}
-          >
-            {websiteStatusLabels[w]}
-          </Link>
-        ))}
-      </div>
-      <div className="flex flex-wrap gap-2">
-        <Link
-          href="/prospects"
-          className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-            !validStatus ? "bg-stone-800 text-[#17191c]" : "bg-stone-200 text-stone-700"
-          }`}
-        >
-          Todos
-        </Link>
-        {prospectStatusOrder.map((s) => (
-          <Link
-            key={s}
-            href={`/prospects?status=${s}`}
-            className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-              validStatus === s
-                ? "bg-stone-800 text-[#17191c]"
-                : prospectStatusBadgeClass[s]
-            }`}
-          >
-            {prospectStatusLabels[s]}
-          </Link>
-        ))}
-      </div>
-      {prospects.length === 0 ? (
-        <p className="mt-4 text-sm text-stone-500">
-          No hay prospectos con este filtro.
-        </p>
-      ) : (
-        <ul className="flex flex-col gap-2.5">
-          {prospects.map((prospect) => (
-            <li key={prospect.id}>
-              <Link
-                href={`/prospects/${prospect.id}`}
-                className="flex items-start justify-between gap-3 rounded-xl border border-stone-300 bg-[#212429] p-3.5"
-              >
-                <div>
-                  <p className="font-semibold leading-snug">{prospect.name}</p>
-                  <p className="mt-1 text-xs text-stone-500">
-                    {prospectCategoryLabels[prospect.category as ProspectCategory] ??
-                      prospect.category}
-                    {prospect.rating !== null &&
-                      ` · ${prospect.rating.toFixed(1)} (${prospect.reviewsCount ?? 0} reseñas)`}
-                  </p>
-                </div>
-                <span className="flex shrink-0 flex-col items-end gap-1">
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                      prospectStatusBadgeClass[prospect.status as ProspectStatus] ??
-                      "bg-stone-200 text-stone-700"
-                    }`}
-                  >
-                    {prospectStatusLabels[prospect.status as ProspectStatus] ??
-                      prospect.status}
-                  </span>
-                  {prospect.websiteStatus === WebsiteStatus.Unknown && (
-                    <span className="rounded-full bg-stone-600 px-2 py-0.5 text-[10px] font-semibold text-stone-200">
-                      Sin verificar
-                    </span>
-                  )}
+      <h1 className="text-xl font-bold">Prospectos</h1>
+      <div className="flex gap-3 overflow-x-auto pb-2 md:grid md:grid-cols-4 md:overflow-visible lg:grid-cols-7">
+        {prospectStatusOrder.map((status) => {
+          const list = byStatus.get(status) ?? [];
+          return (
+            <section
+              key={status}
+              className="flex w-56 shrink-0 flex-col rounded-xl border border-stone-200 bg-stone-50 md:w-auto"
+            >
+              <header className="flex items-center justify-between px-3 py-2">
+                <h2 className="text-xs font-semibold uppercase tracking-wide text-stone-600">
+                  {prospectStatusLabels[status]}
+                </h2>
+                <span className="rounded-full bg-stone-200 px-2 py-0.5 text-xs font-bold tabular-nums text-stone-700">
+                  {list.length}
                 </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+              </header>
+              <div className="flex flex-col gap-2 px-2 pb-2">
+                {list.length === 0 ? (
+                  <p className="rounded-lg border border-dashed border-stone-200 px-2 py-3 text-center text-xs text-stone-400">
+                    Vacío
+                  </p>
+                ) : (
+                  list.map((p) => <BoardCard key={p.id} prospect={p} />)
+                )}
+              </div>
+            </section>
+          );
+        })}
+      </div>
     </div>
+  );
+}
+
+function BoardCard({ prospect }: { prospect: ProspectRow }) {
+  return (
+    <Link
+      href={`/prospects/${prospect.id}`}
+      className="rounded-lg border border-stone-200 bg-white p-3 shadow-sm transition hover:border-indigo-300 hover:shadow"
+    >
+      <p className="text-sm font-semibold leading-snug">{prospect.name}</p>
+      <p className="mt-0.5 text-xs text-stone-500">{prospect.category}</p>
+      <div className="mt-2 flex flex-wrap items-center gap-1">
+        <span
+          className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${prospectStatusBadgeClass[prospect.status as keyof typeof prospectStatusBadgeClass] ?? "bg-stone-200 text-stone-700"}`}
+        >
+          {websiteStatusLabels[prospect.websiteStatus as WebsiteStatus] ?? prospect.websiteStatus}
+        </span>
+        {prospect.demoPageUrl ? (
+          <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold text-indigo-700">
+            Web lista
+          </span>
+        ) : null}
+      </div>
+      <p className="mt-2 text-[10px] text-stone-400">
+        Actualizado {formatRelative(prospect.updatedAt)}
+      </p>
+    </Link>
   );
 }

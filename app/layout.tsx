@@ -43,9 +43,6 @@ export default async function RootLayout({
             </Link>
             {authenticated ? (
               <nav className="flex items-center gap-4 text-sm font-medium">
-                <Link href="/" className="py-2 text-stone-600 hover:text-stone-900">
-                  Panel
-                </Link>
                 <Link
                   href="/prospects"
                   className="py-2 text-stone-600 hover:text-stone-900"
@@ -53,10 +50,16 @@ export default async function RootLayout({
                   Prospectos
                 </Link>
                 <Link
-                  href="/prospects/new"
-                  className="py-2 text-indigo-600 hover:text-indigo-800"
+                  href="/estadisticas"
+                  className="py-2 text-stone-600 hover:text-stone-900"
                 >
-                  Nuevo
+                  Estadísticas
+                </Link>
+                <Link
+                  href="/mejoras"
+                  className="py-2 text-stone-600 hover:text-stone-900"
+                >
+                  Mejoras sugeridas
                 </Link>
                 <LogoutButton />
               </nav>
