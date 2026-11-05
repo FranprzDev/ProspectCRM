@@ -20,3 +20,9 @@ export function formatRelative(timestamp: number): string {
   const diffDays = Math.round(diffHours / 24);
   return rtf.format(diffDays, "day");
 }
+
+export function formatIsoDateTime(iso: string): string {
+  const ms = Date.parse(iso);
+  if (Number.isNaN(ms)) return iso;
+  return formatDateTime(ms);
+}
