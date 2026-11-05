@@ -41,7 +41,7 @@ export function NoteForm({ prospectId }: { prospectId: string }) {
       <button
         type="submit"
         disabled={loading || message.trim() === ""}
-        className="self-start rounded-md bg-stone-800 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+        className="self-start rounded-md bg-stone-800 px-4 py-2 text-sm font-semibold text-[#17191c] disabled:opacity-60"
       >
         Agregar nota
       </button>
