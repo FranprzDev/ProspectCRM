@@ -1,15 +1,23 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+export interface EligibleProspect {
+  id: string;
+  name: string;
+  demoPageUrl: string | null;
+}
+
 export function CampaignCard({
   contactStartedAt,
-  eligibleCount,
+  eligible,
 }: {
   contactStartedAt: string | null;
-  eligibleCount: number;
+  eligible: EligibleProspect[];
 }) {
+  const eligibleCount = eligible.length;
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,8 +52,37 @@ export function CampaignCard({
           <p className="mt-2 text-sm text-stone-400">
             {eligibleCount === 0
               ? "No hay prospectos verificados con muestra lista."
-              : `${eligibleCount} prospectos verificados con muestra lista para contactar.`}
+              : eligibleCount === 1
+                ? "Se contactará solo a este prospecto. Revisá la muestra antes de iniciar."
+                : `Se contactará solo a estos ${eligibleCount} prospectos. Revisá cada muestra antes de iniciar.`}
           </p>
+          {eligibleCount > 0 && (
+            <ul className="mt-3 space-y-2">
+              {eligible.map((prospect) => (
+                <li
+                  key={prospect.id}
+                  className="flex items-center justify-between gap-3 rounded-md border border-stone-300 px-3 py-2"
+                >
+                  <Link
+                    href={`/prospects/${prospect.id}`}
+                    className="truncate text-sm font-medium hover:text-indigo-300"
+                  >
+                    {prospect.name}
+                  </Link>
+                  {prospect.demoPageUrl !== null && (
+                    <a
+                      href={prospect.demoPageUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="shrink-0 rounded-md border border-indigo-400 px-2 py-1 text-xs font-semibold text-indigo-300 hover:bg-indigo-400/10"
+                    >
+                      Ver muestra
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
           <button
             type="button"
             disabled={loading || eligibleCount === 0}
@@ -55,8 +92,9 @@ export function CampaignCard({
             {loading ? "Iniciando..." : "Iniciar contacto"}
           </button>
           <p className="mt-2 text-xs text-stone-500">
-            Al iniciarlo, el agente empieza los envíos. Nada se envía desde esta
-            app.
+            Al iniciarlo, el agente empieza los envíos a este lote. Los
+            prospectos nuevos necesitan otra revisión. Nada se envía desde
+            esta app.
           </p>
         </>
       ) : (

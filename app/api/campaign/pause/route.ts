@@ -5,6 +5,7 @@ import { jsonError } from "@/lib/api/respond";
 export async function POST() {
   try {
     await deleteCampaignValue("contact_started_at");
+    await deleteCampaignValue("contact_batch_ids");
     return NextResponse.json({ contactStartedAt: null });
   } catch (error) {
     return jsonError(error);

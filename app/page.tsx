@@ -11,6 +11,7 @@ import {
   listProspectRows,
 } from "@/lib/services/prospect-service";
 import { getCampaignValue } from "@/lib/db/campaign-repository";
+import { listContactEligible } from "@/lib/db/prospect-repository";
 import { CampaignCard } from "./campaign-card";
 import { formatRelative } from "@/lib/format";
 import { findProspectById } from "@/lib/db/prospect-repository";
@@ -18,11 +19,12 @@ import { findProspectById } from "@/lib/db/prospect-repository";
 export const dynamic = "force-dynamic";
 
 export default async function PanelPage() {
-  const [summary, prospects, review, contactStartedAt] = await Promise.all([
+  const [summary, prospects, review, contactStartedAt, eligibleProspects] = await Promise.all([
     getPipelineSummary(),
     listProspectRows(),
     getReviewSummary(),
     getCampaignValue("contact_started_at"),
+    listContactEligible(),
   ]);
   const names = new Map(prospects.map((p) => [p.id, p.name]));
   const prospectNames = new Map<string, string>();
@@ -120,7 +122,7 @@ export default async function PanelPage() {
       </section>
       <CampaignCard
         contactStartedAt={contactStartedAt}
-        eligibleCount={review.contactEligible}
+        eligible={eligibleProspects}
       />
       <section>
         <h2 className="text-lg font-bold">Actividad reciente</h2>

@@ -76,6 +76,30 @@ export async function countWithDemo(): Promise<number> {
   return rows[0]?.value ?? 0;
 }
 
+export interface ContactEligibleProspect {
+  id: string;
+  name: string;
+  demoPageUrl: string | null;
+}
+
+export async function listContactEligible(): Promise<ContactEligibleProspect[]> {
+  const db = await getDb();
+  return db
+    .select({
+      id: prospects.id,
+      name: prospects.name,
+      demoPageUrl: prospects.demoPageUrl,
+    })
+    .from(prospects)
+    .where(
+      and(
+        eq(prospects.websiteStatus, "NO_WEBSITE"),
+        isNotNull(prospects.demoPageUrl)
+      )
+    )
+    .orderBy(prospects.name);
+}
+
 export async function countContactEligible(): Promise<number> {
   const db = await getDb();
   const rows = await db
