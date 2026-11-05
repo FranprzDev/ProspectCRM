@@ -1,7 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { ServiceWorkerRegister } from "./service-worker-register";
 import { LogoutButton } from "./logout-button";
+import { sessionCookieName, verifySessionToken } from "@/lib/auth/session";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -16,9 +19,19 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+async function isAuthenticated(): Promise<boolean> {
+  const { env } = await getCloudflareContext({ async: true });
+  const secret = env.SESSION_SECRET;
+  if (!secret) return false;
+  const store = await cookies();
+  const token = store.get(sessionCookieName)?.value;
+  return verifySessionToken(token, secret);
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const authenticated = await isAuthenticated();
   return (
     <html lang="es">
       <body className="min-h-screen antialiased">
@@ -28,24 +41,26 @@ export default function RootLayout({
             <Link href="/" className="text-lg font-bold tracking-tight">
               Prospect<span className="text-indigo-600">CRM</span>
             </Link>
-            <nav className="flex items-center gap-4 text-sm font-medium">
-              <Link href="/" className="py-2 text-stone-600 hover:text-stone-900">
-                Panel
-              </Link>
-              <Link
-                href="/prospects"
-                className="py-2 text-stone-600 hover:text-stone-900"
-              >
-                Prospectos
-              </Link>
-              <Link
-                href="/prospects/new"
-                className="py-2 text-indigo-600 hover:text-indigo-800"
-              >
-                Nuevo
-              </Link>
-              <LogoutButton />
-            </nav>
+            {authenticated ? (
+              <nav className="flex items-center gap-4 text-sm font-medium">
+                <Link href="/" className="py-2 text-stone-600 hover:text-stone-900">
+                  Panel
+                </Link>
+                <Link
+                  href="/prospects"
+                  className="py-2 text-stone-600 hover:text-stone-900"
+                >
+                  Prospectos
+                </Link>
+                <Link
+                  href="/prospects/new"
+                  className="py-2 text-indigo-600 hover:text-indigo-800"
+                >
+                  Nuevo
+                </Link>
+                <LogoutButton />
+              </nav>
+            ) : null}
           </header>
           <main className="flex-1 px-4 py-5">{children}</main>
         </div>
