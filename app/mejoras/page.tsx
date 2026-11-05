@@ -31,7 +31,7 @@ export default async function MejorasPage() {
             <li key={imp.id} className="rounded-xl border border-stone-200 p-4">
               <div className="flex items-start justify-between gap-3">
                 <h2 className="font-semibold">{imp.title}</h2>
-                <span className="shrink-0 rounded-full bg-stone-100 px-2 py-0.5 text-xs font-medium text-stone-600">
+                <span className="shrink-0 rounded-full bg-stone-300 px-2 py-0.5 text-xs font-medium text-stone-600">
                   {statusLabels[imp.status] ?? imp.status}
                 </span>
               </div>

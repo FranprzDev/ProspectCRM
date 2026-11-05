@@ -138,8 +138,8 @@ export default async function ProspectDetailPage({
         <h2 className="text-sm font-bold uppercase tracking-wide text-stone-500">
           Conversación
         </h2>
-        <div className="mt-2 rounded-xl border border-stone-200 bg-stone-50 p-3">
-          <p className="mb-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+        <div className="mt-2 rounded-xl border border-stone-200 bg-[#212429] p-3">
+          <p className="mb-3 rounded-lg bg-amber-100 px-3 py-2 text-xs text-amber-800">
             Canal real: email desde franciscoperezdeveloper@gmail.com
             {emails.length === 0
               ? " · Contacto no iniciado: los envíos arrancan cuando Fran toca Iniciar contacto."
@@ -160,16 +160,16 @@ export default async function ProspectDetailPage({
                         className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm shadow-sm ${
                           outbound
                             ? "rounded-br-sm bg-indigo-600 text-white"
-                            : "rounded-bl-sm bg-white text-stone-800"
+                            : "rounded-bl-sm bg-[#2e3339] text-stone-700"
                         }`}
                       >
                         <summary className="cursor-pointer list-none">
                           <span className="font-medium">{item.email.subject}</span>
-                          <span className={`ml-2 text-[10px] ${outbound ? "text-indigo-200" : "text-stone-400"}`}>
+                          <span className={`ml-2 text-[10px] ${outbound ? "text-indigo-800" : "text-stone-400"}`}>
                             {formatDateTime(item.email.sentAt)}
                           </span>
                         </summary>
-                        <p className={`mt-1 text-[11px] ${outbound ? "text-indigo-200" : "text-stone-400"}`}>
+                        <p className={`mt-1 text-[11px] ${outbound ? "text-indigo-800" : "text-stone-400"}`}>
                           De {item.email.fromAddress} para {item.email.toAddress}
                         </p>
                         <p className="mt-1 whitespace-pre-wrap">{item.email.body}</p>
@@ -180,7 +180,7 @@ export default async function ProspectDetailPage({
                 if (item.kind === "note") {
                   return (
                     <div key={item.activity.id} className="flex justify-start">
-                      <div className="max-w-[85%] rounded-2xl rounded-bl-sm border border-dashed border-stone-300 bg-white px-3 py-2 text-sm text-stone-700">
+                      <div className="max-w-[85%] rounded-2xl rounded-bl-sm border border-dashed border-stone-300 bg-[#2e3339] px-3 py-2 text-sm text-stone-700">
                         <span className="mr-2 rounded-full bg-stone-200 px-2 py-0.5 text-[10px] font-semibold text-stone-600">
                           Nota interna
                         </span>

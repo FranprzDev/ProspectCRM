@@ -34,7 +34,7 @@ export default async function EstadisticasPage() {
         </div>
       </section>
 
-      <section className="rounded-xl border border-stone-200 bg-stone-50 p-4 text-sm text-stone-600">
+      <section className="rounded-xl border border-stone-200 bg-[#212429] p-4 text-sm text-stone-600">
         {stats.contacted === 0 ? (
           <p>
             Todavía no se contactó a ningún prospecto, así que no hay tasas de
@@ -68,7 +68,7 @@ function BarRow({ label, count, total }: { label: string; count: number; total: 
   return (
     <div className="flex items-center gap-3 text-sm">
       <span className="w-32 shrink-0 text-stone-600">{label}</span>
-      <div className="h-2 flex-1 rounded-full bg-stone-100">
+      <div className="h-2 flex-1 rounded-full bg-stone-300">
         <div className="h-2 rounded-full bg-indigo-500" style={{ width: `${pct}%` }} />
       </div>
       <span className="w-10 shrink-0 text-right font-medium tabular-nums">{count}</span>
