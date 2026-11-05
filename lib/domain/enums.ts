@@ -44,6 +44,14 @@ export const ProspectCategory = {
   LawFirm: "LAW_FIRM",
   AccountingFirm: "ACCOUNTING_FIRM",
   Mixed: "MIXED",
+  BarbershopSalon: "BARBERIA_PELUQUERIA",
+  CarRepair: "TALLER_MECANICO",
+  Veterinary: "VETERINARIA",
+  HealthStore: "DIETETICA",
+  Optics: "OPTICA",
+  RealEstate: "INMOBILIARIA",
+  Locksmith: "CERRAJERIA",
+  Architecture: "ARQUITECTURA",
   Other: "OTHER",
 } as const;
 
@@ -53,6 +61,14 @@ export const prospectCategoryLabels: Record<ProspectCategory, string> = {
   [ProspectCategory.LawFirm]: "Estudio jurídico",
   [ProspectCategory.AccountingFirm]: "Estudio contable",
   [ProspectCategory.Mixed]: "Jurídico y contable",
+  [ProspectCategory.BarbershopSalon]: "Barbería / peluquería",
+  [ProspectCategory.CarRepair]: "Taller mecánico",
+  [ProspectCategory.Veterinary]: "Veterinaria",
+  [ProspectCategory.HealthStore]: "Dietética",
+  [ProspectCategory.Optics]: "Óptica",
+  [ProspectCategory.RealEstate]: "Inmobiliaria",
+  [ProspectCategory.Locksmith]: "Cerrajería",
+  [ProspectCategory.Architecture]: "Estudio de arquitectura",
   [ProspectCategory.Other]: "Otro",
 };
 

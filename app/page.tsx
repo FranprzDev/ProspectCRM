@@ -3,17 +3,26 @@ import {
   prospectStatusBadgeClass,
   prospectStatusLabels,
   prospectStatusOrder,
+  WebsiteStatus,
 } from "@/lib/domain/enums";
-import { getPipelineSummary, listProspectRows } from "@/lib/services/prospect-service";
+import {
+  getPipelineSummary,
+  getReviewSummary,
+  listProspectRows,
+} from "@/lib/services/prospect-service";
+import { getCampaignValue } from "@/lib/db/campaign-repository";
+import { CampaignCard } from "./campaign-card";
 import { formatRelative } from "@/lib/format";
 import { findProspectById } from "@/lib/db/prospect-repository";
 
 export const dynamic = "force-dynamic";
 
 export default async function PanelPage() {
-  const [summary, prospects] = await Promise.all([
+  const [summary, prospects, review, contactStartedAt] = await Promise.all([
     getPipelineSummary(),
     listProspectRows(),
+    getReviewSummary(),
+    getCampaignValue("contact_started_at"),
   ]);
   const names = new Map(prospects.map((p) => [p.id, p.name]));
   const prospectNames = new Map<string, string>();
@@ -44,7 +53,7 @@ export default async function PanelPage() {
                 </div>
                 {rows.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {rows.map((prospect) => (
+                    {rows.slice(0, 6).map((prospect) => (
                       <Link
                         key={prospect.id}
                         href={`/prospects/${prospect.id}`}
@@ -53,6 +62,14 @@ export default async function PanelPage() {
                         {prospect.name}
                       </Link>
                     ))}
+                    {rows.length > 6 && (
+                      <Link
+                        href={`/prospects?status=${status}`}
+                        className="rounded-md border border-dashed border-stone-400 px-3 py-2 text-sm font-medium text-stone-400 hover:border-indigo-400"
+                      >
+                        +{rows.length - 6} más
+                      </Link>
+                    )}
                   </div>
                 )}
               </div>
@@ -60,6 +77,51 @@ export default async function PanelPage() {
           })}
         </div>
       </section>
+      <section>
+        <h2 className="text-lg font-bold">Revisión de candidatos</h2>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <Link
+            href={`/prospects?web=${WebsiteStatus.Unknown}`}
+            className="rounded-[10px] border border-stone-300 bg-[#212429] px-3 py-2"
+          >
+            <p className="text-lg font-bold leading-tight tabular-nums">
+              {review.websiteCounts[WebsiteStatus.Unknown] ?? 0}
+            </p>
+            <p className="text-xs text-stone-500">Sin verificar</p>
+          </Link>
+          <Link
+            href={`/prospects?web=${WebsiteStatus.NoWebsite}`}
+            className="rounded-[10px] border border-stone-300 bg-[#212429] px-3 py-2"
+          >
+            <p className="text-lg font-bold leading-tight tabular-nums">
+              {review.websiteCounts[WebsiteStatus.NoWebsite] ?? 0}
+            </p>
+            <p className="text-xs text-stone-500">Sin web verificados</p>
+          </Link>
+          <Link
+            href={`/prospects?web=${WebsiteStatus.WeakWebsite}`}
+            className="rounded-[10px] border border-stone-300 bg-[#212429] px-3 py-2"
+          >
+            <p className="text-lg font-bold leading-tight tabular-nums">
+              {review.websiteCounts[WebsiteStatus.WeakWebsite] ?? 0}
+            </p>
+            <p className="text-xs text-stone-500">Web débil</p>
+          </Link>
+          <Link
+            href="/prospects?demo=1"
+            className="rounded-[10px] border border-stone-300 bg-[#212429] px-3 py-2"
+          >
+            <p className="text-lg font-bold leading-tight tabular-nums">
+              {review.withDemo}
+            </p>
+            <p className="text-xs text-stone-500">Con muestra lista</p>
+          </Link>
+        </div>
+      </section>
+      <CampaignCard
+        contactStartedAt={contactStartedAt}
+        eligibleCount={review.contactEligible}
+      />
       <section>
         <h2 className="text-lg font-bold">Actividad reciente</h2>
         {summary.recentActivities.length === 0 ? (
