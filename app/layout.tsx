@@ -37,12 +37,12 @@ export default async function RootLayout({
       <body className="min-h-screen antialiased">
         <ServiceWorkerRegister />
         <div className="mx-auto flex min-h-screen w-full max-w-2xl flex-col">
-          <header className="flex items-center justify-between border-b border-stone-200 px-4 py-3">
-            <Link href="/" className="text-lg font-bold tracking-tight">
+          <header className="flex flex-wrap items-center justify-between gap-x-3 border-b border-stone-200 px-4 py-3">
+            <Link href="/" className="shrink-0 text-lg font-bold tracking-tight">
               Prospect<span className="text-indigo-600">CRM</span>
             </Link>
             {authenticated ? (
-              <nav className="flex items-center gap-4 text-sm font-medium">
+              <nav className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-medium">
                 <Link
                   href="/prospects"
                   className="py-2 text-stone-600 hover:text-stone-900"
