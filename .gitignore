@@ -44,3 +44,6 @@ next-env.d.ts
 .dev.vars
 SPEC.md
 opencode.json
+
+# wrangler local state
+.wrangler/
