@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "prospect-crm",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "prospect-crm-db",
+      "database_id": "71b9af4c-f8f2-441e-984e-bb397444a73f",
+      "migrations_dir": "migrations"
+    }
+  ]
+}
