@@ -66,7 +66,7 @@ export default async function ProspectDetailPage({
           {prospectCategoryLabels[prospect.category as ProspectCategory] ??
             prospect.category}
           {prospect.rating !== null &&
-            ` · ${prospect.rating} estrellas, ${prospect.reviewsCount ?? 0} reseñas`}
+            ` · ${(Math.round(prospect.rating * 10) / 10).toLocaleString("es-AR")} estrellas, ${prospect.reviewsCount ?? 0} reseñas`}
           {` · ${websiteStatusLabels[prospect.websiteStatus as WebsiteStatus] ?? prospect.websiteStatus}`}
         </p>
       </div>
