@@ -53,3 +53,11 @@ export const loginAttempts = sqliteTable("login_attempts", {
 export type ProspectRow = typeof prospects.$inferSelect;
 export type EmailRow = typeof emails.$inferSelect;
 export type ActivityRow = typeof activities.$inferSelect;
+
+export const campaignState = sqliteTable("campaign_state", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+  updatedAt: integer("updated_at").notNull(),
+});
+
+export type CampaignStateRow = typeof campaignState.$inferSelect;

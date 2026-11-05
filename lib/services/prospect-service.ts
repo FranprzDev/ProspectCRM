@@ -15,10 +15,14 @@ import {
 } from "@/lib/db/activity-repository";
 import { listEmailsByProspect } from "@/lib/db/email-repository";
 import {
+  countByWebsiteStatus,
+  countContactEligible,
   countProspectsByStatus,
+  countWithDemo,
   findProspectById,
   insertProspect,
   listProspects,
+  ProspectListFilters,
   updateProspect,
   ActivityRow,
   EmailRow,
@@ -58,9 +62,25 @@ export async function getProspectDetail(id: string): Promise<ProspectDetail | nu
 
 export async function listProspectRows(
   status?: ProspectStatus,
-  search?: string
+  search?: string,
+  extra?: Omit<ProspectListFilters, "status" | "search">
 ): Promise<ProspectRow[]> {
-  return listProspects(status, search);
+  return listProspects({ status, search, ...extra });
+}
+
+export interface ReviewSummary {
+  websiteCounts: Record<string, number>;
+  withDemo: number;
+  contactEligible: number;
+}
+
+export async function getReviewSummary(): Promise<ReviewSummary> {
+  const [websiteCounts, withDemo, contactEligible] = await Promise.all([
+    countByWebsiteStatus(),
+    countWithDemo(),
+    countContactEligible(),
+  ]);
+  return { websiteCounts, withDemo, contactEligible };
 }
 
 export async function updateProspectFields(

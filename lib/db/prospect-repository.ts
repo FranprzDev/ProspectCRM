@@ -1,4 +1,4 @@
-import { and, desc, eq, like, SQL } from "drizzle-orm";
+import { and, count, desc, eq, isNotNull, like, SQL } from "drizzle-orm";
 import { getDb } from "./index";
 import { ActivityRow, EmailRow, ProspectRow, prospects } from "./schema";
 
@@ -33,16 +33,61 @@ export async function findProspectById(id: string): Promise<ProspectRow | null> 
   return rows[0] ?? null;
 }
 
+export interface ProspectListFilters {
+  status?: string;
+  search?: string;
+  websiteStatus?: string;
+  hasDemo?: boolean;
+  category?: string;
+}
+
 export async function listProspects(
-  status?: string,
-  search?: string
+  filters: ProspectListFilters = {}
 ): Promise<ProspectRow[]> {
   const db = await getDb();
-  const filters: SQL[] = [];
-  if (status) filters.push(eq(prospects.status, status));
-  if (search) filters.push(like(prospects.name, `%${search}%`));
-  const where = filters.length > 0 ? and(...filters) : undefined;
+  const conditions: SQL[] = [];
+  if (filters.status) conditions.push(eq(prospects.status, filters.status));
+  if (filters.search) conditions.push(like(prospects.name, `%${filters.search}%`));
+  if (filters.websiteStatus)
+    conditions.push(eq(prospects.websiteStatus, filters.websiteStatus));
+  if (filters.hasDemo) conditions.push(isNotNull(prospects.demoPageUrl));
+  if (filters.category) conditions.push(eq(prospects.category, filters.category));
+  const where = conditions.length > 0 ? and(...conditions) : undefined;
   return db.select().from(prospects).where(where).orderBy(desc(prospects.createdAt));
+}
+
+export async function countByWebsiteStatus(): Promise<Record<string, number>> {
+  const db = await getDb();
+  const rows = await db
+    .select({ status: prospects.websiteStatus, value: count() })
+    .from(prospects)
+    .groupBy(prospects.websiteStatus);
+  const result: Record<string, number> = {};
+  for (const row of rows) result[row.status] = row.value;
+  return result;
+}
+
+export async function countWithDemo(): Promise<number> {
+  const db = await getDb();
+  const rows = await db
+    .select({ value: count() })
+    .from(prospects)
+    .where(isNotNull(prospects.demoPageUrl));
+  return rows[0]?.value ?? 0;
+}
+
+export async function countContactEligible(): Promise<number> {
+  const db = await getDb();
+  const rows = await db
+    .select({ value: count() })
+    .from(prospects)
+    .where(
+      and(
+        eq(prospects.websiteStatus, "NO_WEBSITE"),
+        isNotNull(prospects.demoPageUrl)
+      )
+    );
+  return rows[0]?.value ?? 0;
 }
 
 export async function updateProspect(

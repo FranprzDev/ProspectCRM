@@ -6,6 +6,8 @@ import {
   prospectStatusBadgeClass,
   prospectStatusLabels,
   prospectStatusOrder,
+  WebsiteStatus,
+  websiteStatusLabels,
 } from "@/lib/domain/enums";
 import {
   getPipelineSummary,
@@ -17,14 +19,35 @@ export const dynamic = "force-dynamic";
 export default async function ProspectsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; search?: string }>;
+  searchParams: Promise<{
+    status?: string;
+    search?: string;
+    web?: string;
+    demo?: string;
+    category?: string;
+  }>;
 }) {
-  const { status, search } = await searchParams;
+  const { status, search, web, demo, category } = await searchParams;
   const validStatus = Object.values(ProspectStatus).find((s) => s === status);
+  const validWeb = Object.values(WebsiteStatus).find((w) => w === web);
+  const hasDemo = demo === "1";
   const [prospects, summary] = await Promise.all([
-    listProspectRows(validStatus, search),
+    listProspectRows(validStatus, search, {
+      websiteStatus: validWeb,
+      hasDemo: hasDemo || undefined,
+      category,
+    }),
     getPipelineSummary(),
   ]);
+
+  function webHref(target?: WebsiteStatus): string {
+    const params = new URLSearchParams();
+    if (validStatus) params.set("status", validStatus);
+    if (search) params.set("search", search);
+    if (target) params.set("web", target);
+    const query = params.toString();
+    return query === "" ? "/prospects" : `/prospects?${query}`;
+  }
   const stats = [
     { label: "Nuevos", count: summary.counts[ProspectStatus.New] ?? 0 },
     { label: "Contactados", count: summary.counts[ProspectStatus.Contacted] ?? 0 },
@@ -63,6 +86,29 @@ export default async function ProspectsPage({
           Buscar
         </button>
       </form>
+      <div className="flex flex-wrap gap-2">
+        <Link
+          href={webHref(undefined)}
+          className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
+            !validWeb ? "bg-stone-800 text-[#17191c]" : "bg-stone-200 text-stone-700"
+          }`}
+        >
+          Todas las webs
+        </Link>
+        {Object.values(WebsiteStatus).map((w) => (
+          <Link
+            key={w}
+            href={webHref(w)}
+            className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
+              validWeb === w
+                ? "bg-stone-800 text-[#17191c]"
+                : "bg-stone-200 text-stone-700"
+            }`}
+          >
+            {websiteStatusLabels[w]}
+          </Link>
+        ))}
+      </div>
       <div className="flex flex-wrap gap-2">
         <Link
           href="/prospects"
@@ -104,17 +150,24 @@ export default async function ProspectsPage({
                     {prospectCategoryLabels[prospect.category as ProspectCategory] ??
                       prospect.category}
                     {prospect.rating !== null &&
-                      ` · ${prospect.rating} (${prospect.reviewsCount ?? 0} reseñas)`}
+                      ` · ${prospect.rating.toFixed(1)} (${prospect.reviewsCount ?? 0} reseñas)`}
                   </p>
                 </div>
-                <span
-                  className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${
-                    prospectStatusBadgeClass[prospect.status as ProspectStatus] ??
-                    "bg-stone-200 text-stone-700"
-                  }`}
-                >
-                  {prospectStatusLabels[prospect.status as ProspectStatus] ??
-                    prospect.status}
+                <span className="flex shrink-0 flex-col items-end gap-1">
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                      prospectStatusBadgeClass[prospect.status as ProspectStatus] ??
+                      "bg-stone-200 text-stone-700"
+                    }`}
+                  >
+                    {prospectStatusLabels[prospect.status as ProspectStatus] ??
+                      prospect.status}
+                  </span>
+                  {prospect.websiteStatus === WebsiteStatus.Unknown && (
+                    <span className="rounded-full bg-stone-600 px-2 py-0.5 text-[10px] font-semibold text-stone-200">
+                      Sin verificar
+                    </span>
+                  )}
                 </span>
               </Link>
             </li>
