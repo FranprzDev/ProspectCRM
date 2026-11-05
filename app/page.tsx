@@ -48,7 +48,7 @@ export default async function PanelPage() {
                       <Link
                         key={prospect.id}
                         href={`/prospects/${prospect.id}`}
-                        className="rounded-md border border-stone-300 bg-white px-3 py-2 text-sm font-medium hover:border-indigo-400"
+                        className="rounded-md border border-stone-300 bg-[#212429] px-3 py-2 text-sm font-medium hover:border-indigo-400"
                       >
                         {prospect.name}
                       </Link>

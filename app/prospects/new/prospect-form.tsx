@@ -155,7 +155,7 @@ export function ProspectForm() {
       <button
         type="submit"
         disabled={loading}
-        className="rounded-md bg-indigo-600 px-4 py-3 font-semibold text-white disabled:opacity-60"
+        className="rounded-md bg-indigo-600 px-4 py-3 font-semibold text-[#17191c] disabled:opacity-60"
       >
         {loading ? "Guardando..." : "Guardar prospecto"}
       </button>

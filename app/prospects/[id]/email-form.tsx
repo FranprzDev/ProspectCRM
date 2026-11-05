@@ -54,7 +54,7 @@ export function EmailForm({ prospectId }: { prospectId: string }) {
     "w-full rounded-md border border-stone-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none";
 
   return (
-    <form onSubmit={submit} className="mt-3 flex flex-col gap-3 rounded-md border border-stone-200 bg-white p-3">
+    <form onSubmit={submit} className="mt-3 flex flex-col gap-3 rounded-md border border-stone-200 bg-[#212429] p-3">
       <div className="grid grid-cols-2 gap-2">
         <select name="direction" className={inputClass} defaultValue={EmailDirection.Outbound}>
           <option value={EmailDirection.Outbound}>Enviado</option>
@@ -80,7 +80,7 @@ export function EmailForm({ prospectId }: { prospectId: string }) {
         <button
           type="submit"
           disabled={loading}
-          className="rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+          className="rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-[#17191c] disabled:opacity-60"
         >
           Guardar mail
         </button>

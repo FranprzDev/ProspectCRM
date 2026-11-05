@@ -44,7 +44,7 @@ export function DemoUrlForm({
       <button
         type="submit"
         disabled={loading}
-        className="shrink-0 rounded-md bg-stone-800 px-3 py-2 text-sm font-semibold text-white disabled:opacity-60"
+        className="shrink-0 rounded-md bg-stone-800 px-3 py-2 text-sm font-semibold text-[#17191c] disabled:opacity-60"
       >
         Guardar
       </button>

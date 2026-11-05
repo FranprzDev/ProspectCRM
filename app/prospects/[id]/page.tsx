@@ -143,7 +143,7 @@ export default async function ProspectDetailPage({
         ) : (
           <ul className="mt-2 flex flex-col gap-2">
             {emails.map((email) => (
-              <li key={email.id} className="rounded-md border border-stone-200 bg-white p-3">
+              <li key={email.id} className="rounded-md border border-stone-200 bg-[#212429] p-3">
                 <details>
                   <summary className="cursor-pointer py-1">
                     <span
