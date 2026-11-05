@@ -1,4 +1,4 @@
-import { and, count, isNotNull, ne } from "drizzle-orm";
+import { and, count, inArray, isNotNull } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { prospects } from "@/lib/db/schema";
 import { getCampaignValue } from "@/lib/db/campaign-repository";
@@ -29,7 +29,7 @@ export async function getStatistics(): Promise<Statistics> {
       db.select({ status: prospects.status, c: count() }).from(prospects).groupBy(prospects.status),
       db.select({ status: prospects.websiteStatus, c: count() }).from(prospects).groupBy(prospects.websiteStatus),
       db.select({ c: count() }).from(prospects).where(isNotNull(prospects.demoPageUrl)),
-      db.select({ c: count() }).from(prospects).where(and(isNotNull(prospects.demoPageUrl), ne(prospects.websiteStatus, "UNKNOWN"))),
+      db.select({ c: count() }).from(prospects).where(and(isNotNull(prospects.demoPageUrl), inArray(prospects.websiteStatus, [WebsiteStatus.NoWebsite, WebsiteStatus.WeakWebsite]))),
       db.select({ c: count() }).from(prospects).where(isNotNull(prospects.email)),
       getCampaignValue("contact_started_at"),
     ]);

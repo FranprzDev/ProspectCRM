@@ -12,7 +12,7 @@ export default async function EstadisticasPage() {
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         <StatCard label="Prospectos" value={stats.total} />
         <StatCard label="Con web de muestra" value={stats.withDemo} />
-        <StatCard label="Con demo y web verificada" value={stats.demoVerified} />
+        <StatCard label="Con demo, verificado sin web o web débil" value={stats.demoVerified} />
         <StatCard label="Con email cargado" value={stats.withEmail} />
         <StatCard label="Contactados" value={stats.contacted} />
       </section>
