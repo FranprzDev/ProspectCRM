@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAgentToken } from "@/lib/auth/agent";
 import {
+  deleteProspectById,
   getProspectDetail,
   updateProspectFields,
 } from "@/lib/services/prospect-service";
@@ -30,4 +31,12 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   } catch (error) {
     return jsonError(error);
   }
+}
+
+export async function DELETE(request: NextRequest, context: RouteContext) {
+  if (!(await requireAgentToken(request))) return unauthorized();
+  const { id } = await context.params;
+  const deleted = await deleteProspectById(id);
+  if (!deleted) return notFound();
+  return NextResponse.json({ deleted: true });
 }
