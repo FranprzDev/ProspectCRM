@@ -14,6 +14,7 @@ import {
 import { getProspectDetail } from "@/lib/services/prospect-service";
 import { formatDateTime } from "@/lib/format";
 import { StatusActions } from "./status-actions";
+import { WebsiteStatusActions } from "./website-status-actions";
 import { DemoUrlForm } from "./demo-url-form";
 import { EmailForm } from "./email-form";
 import { NoteForm } from "./note-form";
@@ -66,7 +67,7 @@ export default async function ProspectDetailPage({
           {prospectCategoryLabels[prospect.category as ProspectCategory] ??
             prospect.category}
           {prospect.rating !== null &&
-            ` · ${prospect.rating} estrellas, ${prospect.reviewsCount ?? 0} reseñas`}
+            ` · ${(Math.round(prospect.rating * 10) / 10).toLocaleString("es-AR")} estrellas, ${prospect.reviewsCount ?? 0} reseñas`}
           {` · ${websiteStatusLabels[prospect.websiteStatus as WebsiteStatus] ?? prospect.websiteStatus}`}
         </p>
       </div>
@@ -76,6 +77,16 @@ export default async function ProspectDetailPage({
           Estado de la venta
         </h2>
         <StatusActions prospectId={prospect.id} currentStatus={status} />
+      </section>
+
+      <section>
+        <h2 className="text-sm font-bold uppercase tracking-wide text-stone-500">
+          Verificación de sitio web
+        </h2>
+        <WebsiteStatusActions
+          prospectId={prospect.id}
+          currentStatus={prospect.websiteStatus as WebsiteStatus}
+        />
       </section>
 
       <section>

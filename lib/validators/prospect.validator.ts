@@ -101,6 +101,13 @@ export function parseProspectStatus(body: unknown): ProspectStatus {
   return enumValue(ProspectStatus, (body as Record<string, unknown>).status, "estado");
 }
 
+export function parseWebsiteStatus(body: unknown): WebsiteStatus {
+  if (typeof body !== "object" || body === null) {
+    throw new ValidationError("El cuerpo del pedido no es válido");
+  }
+  return enumValue(WebsiteStatus, (body as Record<string, unknown>).websiteStatus, "estado web");
+}
+
 export function parseNote(body: unknown): string {
   if (typeof body !== "object" || body === null) {
     throw new ValidationError("El cuerpo del pedido no es válido");

@@ -3,6 +3,8 @@ import {
   activityTypeLabels,
   ProspectStatus,
   prospectStatusLabels,
+  WebsiteStatus,
+  websiteStatusLabels,
 } from "@/lib/domain/enums";
 import {
   CreateProspectInput,
@@ -124,6 +126,26 @@ export async function changeProspectStatus(
       id,
       ActivityType.StatusChange,
       `${from} → ${prospectStatusLabels[status]}`
+    );
+  }
+  return findProspectById(id);
+}
+
+export async function changeWebsiteStatus(
+  id: string,
+  websiteStatus: WebsiteStatus
+): Promise<ProspectRow | null> {
+  const existing = await findProspectById(id);
+  if (existing === null) return null;
+  if (existing.websiteStatus !== websiteStatus) {
+    const from =
+      websiteStatusLabels[existing.websiteStatus as WebsiteStatus] ??
+      existing.websiteStatus;
+    await updateProspect(id, { websiteStatus });
+    await insertActivity(
+      id,
+      ActivityType.StatusChange,
+      `Web: ${from} → ${websiteStatusLabels[websiteStatus]}`
     );
   }
   return findProspectById(id);

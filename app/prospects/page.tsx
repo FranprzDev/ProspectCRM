@@ -1,5 +1,7 @@
 import Link from "next/link";
 import {
+  prospectCategoryLabels,
+  ProspectCategory,
   prospectStatusBadgeClass,
   prospectStatusLabels,
   prospectStatusOrder,
@@ -66,7 +68,7 @@ function BoardCard({ prospect }: { prospect: ProspectRow }) {
       className="rounded-lg border border-stone-300 bg-[#17191c] p-3 transition hover:border-indigo-500"
     >
       <p className="text-sm font-semibold leading-snug">{prospect.name}</p>
-      <p className="mt-0.5 text-xs text-stone-500">{prospect.category}</p>
+      <p className="mt-0.5 text-xs text-stone-500">{prospectCategoryLabels[prospect.category as ProspectCategory] ?? prospect.category}</p>
       <div className="mt-2 flex flex-wrap items-center gap-1">
         <span
           className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${prospectStatusBadgeClass[prospect.status as keyof typeof prospectStatusBadgeClass] ?? "bg-stone-200 text-stone-700"}`}

@@ -26,7 +26,12 @@ export async function middleware(request: NextRequest) {
   const secret = env.SESSION_SECRET;
   const token = request.cookies.get(sessionCookieName)?.value;
   const valid = secret ? await verifySessionToken(token, secret) : false;
-  if (valid) return NextResponse.next();
+  if (valid) {
+    if (pathname === "/") {
+      return NextResponse.redirect(new URL("/prospects", request.url));
+    }
+    return NextResponse.next();
+  }
   if (pathname.startsWith("/api/")) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }

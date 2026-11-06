@@ -9,10 +9,11 @@ export default async function EstadisticasPage() {
     <main className="flex flex-col gap-6 px-4 py-6">
       <h1 className="text-xl font-bold">Estadísticas</h1>
 
-      <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <section className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         <StatCard label="Prospectos" value={stats.total} />
         <StatCard label="Con web de muestra" value={stats.withDemo} />
-        <StatCard label="Listos para contacto" value={stats.eligible} />
+        <StatCard label="Con demo, verificado sin web o web débil" value={stats.demoVerified} />
+        <StatCard label="Con email cargado" value={stats.withEmail} />
         <StatCard label="Contactados" value={stats.contacted} />
       </section>
 
@@ -37,9 +38,10 @@ export default async function EstadisticasPage() {
       <section className="rounded-xl border border-stone-200 bg-[#212429] p-4 text-sm text-stone-600">
         {stats.contacted === 0 ? (
           <p>
-            Todavía no se contactó a ningún prospecto, así que no hay tasas de
-            respuesta ni de conversión que mostrar. Apenas empiecen los envíos,
-            esta sección va a mostrar datos reales.
+            Todavía no se contactó a ningún prospecto y ninguno tiene email
+            cargado (0 de {stats.total}), así que no hay tasas de respuesta ni
+            de conversión que mostrar. Apenas empiecen los envíos, esta sección
+            va a mostrar datos reales.
           </p>
         ) : null}
         <p className="mt-1">
