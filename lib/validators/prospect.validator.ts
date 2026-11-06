@@ -63,6 +63,7 @@ export interface UpdateProspectInput {
   mapsUrl?: string | null;
   websiteUrl?: string | null;
   websiteStatus?: WebsiteStatus;
+  status?: ProspectStatus;
   rating?: number | null;
   reviewsCount?: number | null;
   pitchAngle?: string | null;
@@ -83,6 +84,13 @@ export function parseUpdateProspect(body: unknown): UpdateProspectInput {
   if ("address" in data) input.address = optionalString(data.address);
   if ("mapsUrl" in data) input.mapsUrl = optionalUrl(data.mapsUrl, "El link de Maps");
   if ("websiteUrl" in data) input.websiteUrl = optionalUrl(data.websiteUrl, "La web");
+  if ("status" in data) {
+    const status = enumValue(ProspectStatus, data.status, "estado");
+    if (status !== ProspectStatus.Excluded) {
+      throw new ValidationError("El agente solo puede marcar EXCLUDED");
+    }
+    input.status = status;
+  }
   if ("websiteStatus" in data) {
     input.websiteStatus = enumValue(WebsiteStatus, data.websiteStatus, "estado de la web");
   }

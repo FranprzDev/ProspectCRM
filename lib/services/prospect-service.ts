@@ -100,6 +100,13 @@ export async function updateProspectFields(
   const existing = await findProspectById(id);
   if (existing === null) return null;
   await updateProspect(id, input);
+  if (input.status !== undefined && input.status !== existing.status) {
+    await insertActivity(
+      id,
+      ActivityType.StatusChange,
+      `Estado: ${existing.status} -> ${input.status}`
+    );
+  }
   if (input.demoPageUrl !== undefined && input.demoPageUrl !== existing.demoPageUrl) {
     await insertActivity(
       id,
