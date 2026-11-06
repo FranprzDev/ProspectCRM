@@ -2,7 +2,7 @@
   "name": "ProspectCRM",
   "short_name": "ProspectCRM",
   "description": "CRM para seguir prospectos de venta de webs",
-  "start_url": "/",
+  "start_url": "/prospects",
   "display": "standalone",
   "background_color": "#17191c",
   "theme_color": "#17191c",
