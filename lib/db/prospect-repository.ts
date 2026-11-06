@@ -95,6 +95,7 @@ export async function listContactEligible(): Promise<ContactEligibleProspect[]> 
       and(
         eq(prospects.websiteStatus, "NO_WEBSITE"),
         isNotNull(prospects.demoPageUrl),
+        isNotNull(prospects.email),
         ne(prospects.status, "OPTED_OUT")
       )
     )
@@ -110,10 +111,16 @@ export async function countContactEligible(): Promise<number> {
       and(
         eq(prospects.websiteStatus, "NO_WEBSITE"),
         isNotNull(prospects.demoPageUrl),
+        isNotNull(prospects.email),
         ne(prospects.status, "OPTED_OUT")
       )
     );
   return rows[0]?.value ?? 0;
+}
+
+export async function deleteProspect(id: string): Promise<void> {
+  const db = await getDb();
+  await db.delete(prospects).where(eq(prospects.id, id));
 }
 
 export async function updateProspect(

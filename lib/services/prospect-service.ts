@@ -17,6 +17,7 @@ import { listEmailsByProspect } from "@/lib/db/email-repository";
 import {
   countByWebsiteStatus,
   countContactEligible,
+  deleteProspect,
   countProspectsByStatus,
   countWithDemo,
   findProspectById,
@@ -81,6 +82,13 @@ export async function getReviewSummary(): Promise<ReviewSummary> {
     countContactEligible(),
   ]);
   return { websiteCounts, withDemo, contactEligible };
+}
+
+export async function deleteProspectById(id: string): Promise<boolean> {
+  const existing = await findProspectById(id);
+  if (existing === null) return false;
+  await deleteProspect(id);
+  return true;
 }
 
 export async function updateProspectFields(
