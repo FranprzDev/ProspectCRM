@@ -47,6 +47,7 @@ export async function listProspects(
   const db = await getDb();
   const conditions: SQL[] = [];
   if (filters.status) conditions.push(eq(prospects.status, filters.status));
+  else conditions.push(ne(prospects.status, "EXCLUDED"));
   if (filters.search) conditions.push(like(prospects.name, `%${filters.search}%`));
   if (filters.websiteStatus)
     conditions.push(eq(prospects.websiteStatus, filters.websiteStatus));
@@ -96,7 +97,8 @@ export async function listContactEligible(): Promise<ContactEligibleProspect[]> 
         inArray(prospects.websiteStatus, ["NO_WEBSITE", "WEAK_WEBSITE"]),
         isNotNull(prospects.demoPageUrl),
         isNotNull(prospects.email),
-        ne(prospects.status, "OPTED_OUT")
+        ne(prospects.status, "OPTED_OUT"),
+        ne(prospects.status, "EXCLUDED")
       )
     )
     .orderBy(prospects.name);
@@ -112,7 +114,8 @@ export async function countContactEligible(): Promise<number> {
         inArray(prospects.websiteStatus, ["NO_WEBSITE", "WEAK_WEBSITE"]),
         isNotNull(prospects.demoPageUrl),
         isNotNull(prospects.email),
-        ne(prospects.status, "OPTED_OUT")
+        ne(prospects.status, "OPTED_OUT"),
+        ne(prospects.status, "EXCLUDED")
       )
     );
   return rows[0]?.value ?? 0;

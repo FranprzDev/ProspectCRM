@@ -7,6 +7,7 @@ export const ProspectStatus = {
   Won: "WON",
   Lost: "LOST",
   OptedOut: "OPTED_OUT",
+  Excluded: "EXCLUDED",
 } as const;
 
 export type ProspectStatus = (typeof ProspectStatus)[keyof typeof ProspectStatus];
@@ -31,6 +32,7 @@ export const prospectStatusLabels: Record<ProspectStatus, string> = {
   [ProspectStatus.Won]: "Ganado",
   [ProspectStatus.Lost]: "Perdido",
   [ProspectStatus.OptedOut]: "Baja pedida",
+  [ProspectStatus.Excluded]: "Excluido",
 };
 
 export const prospectStatusBadgeClass: Record<ProspectStatus, string> = {
@@ -42,6 +44,7 @@ export const prospectStatusBadgeClass: Record<ProspectStatus, string> = {
   [ProspectStatus.Won]: "bg-green-100 text-green-800",
   [ProspectStatus.Lost]: "bg-red-100 text-red-800",
   [ProspectStatus.OptedOut]: "bg-stone-800 text-stone-100",
+  [ProspectStatus.Excluded]: "bg-stone-100 text-stone-500",
 };
 
 export const ProspectCategory = {
