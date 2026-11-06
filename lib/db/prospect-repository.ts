@@ -1,4 +1,4 @@
-import { and, count, desc, eq, isNotNull, like, SQL } from "drizzle-orm";
+import { and, count, desc, eq, isNotNull, like, ne, SQL } from "drizzle-orm";
 import { getDb } from "./index";
 import { ActivityRow, EmailRow, ProspectRow, prospects } from "./schema";
 
@@ -94,7 +94,8 @@ export async function listContactEligible(): Promise<ContactEligibleProspect[]> 
     .where(
       and(
         eq(prospects.websiteStatus, "NO_WEBSITE"),
-        isNotNull(prospects.demoPageUrl)
+        isNotNull(prospects.demoPageUrl),
+        ne(prospects.status, "OPTED_OUT")
       )
     )
     .orderBy(prospects.name);
@@ -108,7 +109,8 @@ export async function countContactEligible(): Promise<number> {
     .where(
       and(
         eq(prospects.websiteStatus, "NO_WEBSITE"),
-        isNotNull(prospects.demoPageUrl)
+        isNotNull(prospects.demoPageUrl),
+        ne(prospects.status, "OPTED_OUT")
       )
     );
   return rows[0]?.value ?? 0;
