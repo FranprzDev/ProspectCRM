@@ -53,8 +53,8 @@ export function CampaignCard({
             {eligibleCount === 0
               ? "No hay prospectos verificados con muestra lista."
               : eligibleCount === 1
-                ? "Se contactará solo a este prospecto. Revisá la muestra antes de iniciar."
-                : `Se contactará solo a estos ${eligibleCount} prospectos. Revisá cada muestra antes de iniciar.`}
+                ? "Se contactará solo a este prospecto. El agente revisa la muestra y ejecuta el envío."
+                : `Se contactará solo a estos ${eligibleCount} prospectos. El agente revisa cada muestra y ejecuta los envíos.`}
           </p>
           {eligibleCount > 0 && (
             <ul className="mt-3 space-y-2">

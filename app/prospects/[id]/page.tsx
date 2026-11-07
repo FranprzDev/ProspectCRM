@@ -13,6 +13,13 @@ import {
 } from "@/lib/domain/enums";
 import { getProspectDetail } from "@/lib/services/prospect-service";
 import { formatDateTime } from "@/lib/format";
+import {
+  IconExternal,
+  IconMail,
+  IconMapPin,
+  IconPhone,
+  IconWhatsApp,
+} from "@/app/icons";
 import { StatusActions } from "./status-actions";
 import { WebsiteStatusActions } from "./website-status-actions";
 import { DemoUrlForm } from "./demo-url-form";
@@ -93,33 +100,62 @@ export default async function ProspectDetailPage({
         <h2 className="text-sm font-bold uppercase tracking-wide text-stone-500">
           Contacto
         </h2>
-        <div className="mt-2 flex flex-col gap-1.5 text-sm">
+        <div className="mt-2 flex flex-wrap gap-2">
           {prospect.phone !== null && (
-            <a href={`tel:${prospect.phone}`} className="py-1 font-medium text-indigo-700">
-              {prospect.phone}
-            </a>
+            <>
+              <a
+                href={`tel:${prospect.phone}`}
+                className="inline-flex items-center gap-1.5 rounded-full border border-stone-300 px-3 py-1.5 text-sm font-medium text-stone-700 hover:border-indigo-500"
+              >
+                <IconPhone className="h-3.5 w-3.5" />
+                {prospect.phone}
+              </a>
+              <a
+                href={`https://wa.me/${prospect.phone.replace(/\D/g, "")}`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1.5 text-sm font-semibold text-green-800 hover:brightness-110"
+              >
+                <IconWhatsApp />
+                WhatsApp
+              </a>
+            </>
           )}
           {prospect.email !== null && (
-            <a href={`mailto:${prospect.email}`} className="py-1 font-medium text-indigo-700">
+            <a
+              href={`mailto:${prospect.email}`}
+              className="inline-flex items-center gap-1.5 rounded-full border border-stone-300 px-3 py-1.5 text-sm font-medium text-stone-700 hover:border-indigo-500"
+            >
+              <IconMail className="h-3.5 w-3.5" />
               {prospect.email}
             </a>
           )}
-          {prospect.address !== null && (
-            <p className="text-stone-600">{prospect.address}</p>
+          {prospect.mapsUrl !== null && (
+            <a
+              href={prospect.mapsUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-stone-300 px-3 py-1.5 text-sm font-medium text-stone-700 hover:border-indigo-500"
+            >
+              <IconMapPin className="h-3.5 w-3.5" />
+              Maps
+            </a>
           )}
-          <div className="flex gap-4">
-            {prospect.mapsUrl !== null && (
-              <a href={prospect.mapsUrl} target="_blank" rel="noreferrer" className="py-1 font-medium text-indigo-700">
-                Ver en Maps
-              </a>
-            )}
-            {prospect.websiteUrl !== null && (
-              <a href={prospect.websiteUrl} target="_blank" rel="noreferrer" className="py-1 font-medium text-indigo-700">
-                Web actual
-              </a>
-            )}
-          </div>
+          {prospect.websiteUrl !== null && (
+            <a
+              href={prospect.websiteUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-stone-300 px-3 py-1.5 text-sm font-medium text-stone-700 hover:border-indigo-500"
+            >
+              <IconExternal className="h-3.5 w-3.5" />
+              Web actual
+            </a>
+          )}
         </div>
+        {prospect.address !== null && (
+          <p className="mt-2 text-sm text-stone-600">{prospect.address}</p>
+        )}
       </section>
 
       {prospect.pitchAngle !== null && (
@@ -137,10 +173,25 @@ export default async function ProspectDetailPage({
         <h2 className="text-sm font-bold uppercase tracking-wide text-stone-500">
           Página de muestra
         </h2>
-        {prospect.demoPageUrl !== null && (
-          <a href={prospect.demoPageUrl} target="_blank" rel="noreferrer" className="mt-1 block py-1 text-sm font-medium text-indigo-700">
-            {prospect.demoPageUrl}
-          </a>
+        {prospect.demoPageUrl !== null ? (
+          <>
+            <a
+              href={prospect.demoPageUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-2 inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500"
+            >
+              <IconExternal className="h-4 w-4" />
+              Ver página de muestra
+            </a>
+            <p className="mt-1.5 break-all text-xs text-stone-500">
+              {prospect.demoPageUrl}
+            </p>
+          </>
+        ) : (
+          <p className="mt-1 text-sm text-stone-500">
+            Todavía no tiene página de muestra.
+          </p>
         )}
         <DemoUrlForm prospectId={prospect.id} currentUrl={prospect.demoPageUrl} />
       </section>
@@ -153,7 +204,7 @@ export default async function ProspectDetailPage({
           <p className="mb-3 rounded-lg bg-amber-100 px-3 py-2 text-xs text-amber-800">
             Canal real: email desde franciscoperezdeveloper@gmail.com
             {emails.length === 0
-              ? " · Contacto no iniciado: los envíos arrancan cuando Fran toca Iniciar contacto."
+              ? " · Contacto no iniciado: los envíos los prepara y ejecuta el agente; nada se manda desde esta app."
               : ` · ${emails.length} mail${emails.length === 1 ? "" : "s"} intercambiado${emails.length === 1 ? "" : "s"}.`}
           </p>
           {timeline.length === 0 ? (
