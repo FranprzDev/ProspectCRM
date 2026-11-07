@@ -56,6 +56,13 @@ export default async function EstadisticasPage() {
             />
           ))}
         </div>
+        {stats.excludedCount > 0 ? (
+          <p className="mt-3 text-xs text-stone-500">
+            {stats.excludedCount}{" "}
+            {stats.excludedCount === 1 ? "excluido" : "excluidos"} (fuera de
+            campaña)
+          </p>
+        ) : null}
       </section>
 
       <section className="rounded-xl border border-stone-200 p-4">
