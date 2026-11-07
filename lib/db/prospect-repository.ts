@@ -38,6 +38,7 @@ export interface ProspectListFilters {
   search?: string;
   websiteStatus?: string;
   hasDemo?: boolean;
+  hasEmail?: boolean;
   category?: string;
 }
 
@@ -52,6 +53,7 @@ export async function listProspects(
   if (filters.websiteStatus)
     conditions.push(eq(prospects.websiteStatus, filters.websiteStatus));
   if (filters.hasDemo) conditions.push(isNotNull(prospects.demoPageUrl));
+  if (filters.hasEmail) conditions.push(isNotNull(prospects.email));
   if (filters.category) conditions.push(eq(prospects.category, filters.category));
   const where = conditions.length > 0 ? and(...conditions) : undefined;
   return db.select().from(prospects).where(where).orderBy(desc(prospects.createdAt));

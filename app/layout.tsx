@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { ServiceWorkerRegister } from "./service-worker-register";
 import { LogoutButton } from "./logout-button";
+import { NavLinks } from "./nav-links";
 import { sessionCookieName, verifySessionToken } from "@/lib/auth/session";
 import "./globals.css";
 
@@ -37,33 +38,18 @@ export default async function RootLayout({
       <body className="min-h-screen antialiased">
         <ServiceWorkerRegister />
         <div className="mx-auto flex min-h-screen w-full max-w-2xl flex-col">
-          <header className="flex flex-wrap items-center justify-between gap-x-3 border-b border-stone-200 px-4 py-3">
-            <Link href="/" className="shrink-0 text-lg font-bold tracking-tight">
-              Prospect<span className="text-indigo-600">CRM</span>
-            </Link>
-            {authenticated ? (
-              <nav className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-medium">
-                <Link
-                  href="/prospects"
-                  className="py-2 text-stone-600 hover:text-stone-900"
-                >
-                  Prospectos
-                </Link>
-                <Link
-                  href="/estadisticas"
-                  className="py-2 text-stone-600 hover:text-stone-900"
-                >
-                  Estadísticas
-                </Link>
-                <Link
-                  href="/mejoras"
-                  className="py-2 text-stone-600 hover:text-stone-900"
-                >
-                  Mejoras sugeridas
-                </Link>
-                <LogoutButton />
-              </nav>
-            ) : null}
+          <header className="sticky top-0 z-20 border-b border-stone-200 bg-[#17191c]/95 backdrop-blur">
+            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 px-4 py-2.5">
+              <Link href="/" className="shrink-0 text-lg font-bold tracking-tight">
+                Prospect<span className="text-indigo-600">CRM</span>
+              </Link>
+              {authenticated ? (
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <NavLinks />
+                  <LogoutButton />
+                </div>
+              ) : null}
+            </div>
           </header>
           <main className="flex-1 px-4 py-5">{children}</main>
         </div>
