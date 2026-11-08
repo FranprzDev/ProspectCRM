@@ -29,6 +29,15 @@ import type { ActivityRow, EmailRow } from "@/lib/db/schema";
 
 export const dynamic = "force-dynamic";
 
+const MONOREPO = "https://github.com/FranprzDev/prospect-webs";
+
+function demoSourceUrl(demoPageUrl: string): string | null {
+  const m = demoPageUrl.match(
+    /^https:\/\/([a-z0-9-]+)\.franprzdev\.workers\.dev\/?$/,
+  );
+  return m === null ? null : `${MONOREPO}/tree/main/webs/${m[1]}`;
+}
+
 type TimelineItem =
   | { kind: "email"; ts: number; email: EmailRow }
   | { kind: "note"; ts: number; activity: ActivityRow }
@@ -187,6 +196,17 @@ export default async function ProspectDetailPage({
             <p className="mt-1.5 break-all text-xs text-stone-500">
               {prospect.demoPageUrl}
             </p>
+            {demoSourceUrl(prospect.demoPageUrl) !== null && (
+              <a
+                href={demoSourceUrl(prospect.demoPageUrl) ?? undefined}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-400 hover:text-indigo-300"
+              >
+                <IconExternal className="h-3.5 w-3.5" />
+                Ver código en GitHub
+              </a>
+            )}
           </>
         ) : (
           <p className="mt-1 text-sm text-stone-500">
