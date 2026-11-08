@@ -31,6 +31,10 @@ The project and code are public. Real prospect data, emails and credentials live
 - Real authentication: PBKDF2-hashed password, HMAC-signed HttpOnly+Secure+SameSite session cookie, login rate limiting, middleware protection on every route
 - Agent API (bearer token) so an assistant can register prospects, log sent emails and advance states without any OAuth in the app itself
 
+## Demo sites
+
+Every prospect demo website lives in the private monorepo [FranprzDev/prospect-webs](https://github.com/FranprzDev/prospect-webs): one folder per site, named after its Cloudflare worker (`webs/<worker>` -> `https://<worker>.franprzdev.workers.dev/`). Its `manifest.json` maps each folder to the matching prospect record in this CRM.
+
 ## Scripts
 
 - `npm run dev` local dev
