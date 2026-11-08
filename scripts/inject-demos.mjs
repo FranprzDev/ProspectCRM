@@ -6,7 +6,7 @@
 // skipped with a warning (drymeat-web and anka-aerial-web stay on their own
 // workers: SPAs with root-absolute asset paths).
 // Usage: DEMOS_DIR=<path to prospect-webs checkout> node scripts/inject-demos.mjs
-import { cpSync, existsSync, mkdirSync, readdirSync, statSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 const demosDir = process.env.DEMOS_DIR;
@@ -21,10 +21,24 @@ if (!existsSync(assetsDir)) {
   process.exit(1);
 }
 
+// Solo se inyectan las webs migrables con ficha viva en el CRM (manifest.json):
+// quedan fuera las SPAs que conservan worker propio (drymeat/anka) y las demos
+// sin ficha (normaster, excluida de la campaña; almacen-de-maria, rubro descartado).
+const manifest = JSON.parse(readFileSync(join(demosDir, "manifest.json"), "utf8"));
+const injectable = new Set(
+  manifest.webs
+    .filter((e) => e.prospect !== null && String(e.hosting ?? "").startsWith("migrable"))
+    .map((e) => e.worker),
+);
+
 let copied = 0;
 for (const slug of readdirSync(websDir)) {
   const dir = join(websDir, slug);
   if (!statSync(dir).isDirectory()) continue;
+  if (!injectable.has(slug)) {
+    console.log(`inject-demos: ${slug} no migrable o sin ficha, se omite`);
+    continue;
+  }
   const src = existsSync(join(dir, "site", "index.html"))
     ? join(dir, "site")
     : existsSync(join(dir, "public", "index.html"))
