@@ -35,6 +35,9 @@ The project and code are public. Real prospect data, emails and credentials live
 
 Every prospect demo website lives in the private monorepo [FranprzDev/prospect-webs](https://github.com/FranprzDev/prospect-webs): one folder per site, named after its Cloudflare worker (`webs/<worker>` -> `https://<worker>.franprzdev.workers.dev/`). Its `manifest.json` maps each folder to the matching prospect record in this CRM.
 
+The demos are also served by path on this host: `https://prospect-crm.franprzdev.workers.dev/<worker>`. They are static assets with no access to the CRM data or session: at deploy time `scripts/inject-demos.mjs` copies each site's `site/` (or `public/`) folder from a prospect-webs checkout (`DEMOS_DIR`) into the worker's assets, and Cloudflare serves them before the app (no auth middleware involved). drymeat-web and anka-aerial-web are excluded on purpose (SPAs with root-absolute asset paths and already-shared links; they keep their own workers).
+
+
 ## Scripts
 
 - `npm run dev` local dev
