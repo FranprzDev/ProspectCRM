@@ -50,8 +50,11 @@ The demos are also served by path on this host: `https://prospect-crm.franprzdev
 
 1. `npx wrangler d1 create prospect-crm-db` and set `database_id` in `wrangler.jsonc`
 2. `npx wrangler secret put ADMIN_PASSWORD_HASH` (PBKDF2 format `iterations:salt:hash`), `npx wrangler secret put SESSION_SECRET`, `npx wrangler secret put AGENT_API_TOKEN`
-3. `npm run deploy`
-4. `npx wrangler d1 migrations apply prospect-crm-db --remote`
+3. Clone the demos monorepo next to this checkout (one time): `git clone https://github.com/FranprzDev/prospect-webs ../prospect-webs`
+4. `npm run deploy` (builds, then injects the 93 path-hosted demos from `../prospect-webs` into the worker assets; override the location with `DEMOS_DIR=<path>`)
+5. `npx wrangler d1 migrations apply prospect-crm-db --remote`
+
+`npm run deploy` fails before deploying if the prospect-webs checkout is missing or incomplete, so a deploy can never silently drop the demo routes. To deploy the CRM alone on purpose: `ALLOW_NO_DEMOS=1 npm run deploy`.
 
 ## Agent API
 
