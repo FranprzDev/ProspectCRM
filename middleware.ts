@@ -21,6 +21,16 @@ function isPublicPath(pathname: string): boolean {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  if (pathname === "/786-barbershop-web" || pathname === "/786-barbershop-web/") {
+    return new NextResponse("404", {
+      status: 404,
+      headers: {
+        "Content-Type": "text/plain",
+        "Cache-Control": "no-store",
+        "X-Robots-Tag": "noindex",
+      },
+    });
+  }
   if (isPublicPath(pathname)) return NextResponse.next();
   const { env } = await getCloudflareContext({ async: true });
   const secret = env.SESSION_SECRET;
