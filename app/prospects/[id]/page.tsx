@@ -1,3 +1,4 @@
+import { WhatsAppHandoff } from "@/app/whatsapp-handoff";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -18,7 +19,6 @@ import {
   IconMail,
   IconMapPin,
   IconPhone,
-  IconWhatsApp,
 } from "@/app/icons";
 import { StatusActions } from "./status-actions";
 import { WebsiteStatusActions } from "./website-status-actions";
@@ -119,15 +119,7 @@ export default async function ProspectDetailPage({
                 <IconPhone className="h-3.5 w-3.5" />
                 {prospect.phone}
               </a>
-              <a
-                href={`https://wa.me/${prospect.phone.replace(/\D/g, "")}`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1.5 text-sm font-semibold text-green-800 hover:brightness-110"
-              >
-                <IconWhatsApp />
-                WhatsApp
-              </a>
+
             </>
           )}
           {prospect.email !== null && (
@@ -162,6 +154,7 @@ export default async function ProspectDetailPage({
             </a>
           )}
         </div>
+        <div className="mt-3"><WhatsAppHandoff prospectId={prospect.id} /></div>
         {prospect.address !== null && (
           <p className="mt-2 text-sm text-stone-600">{prospect.address}</p>
         )}
