@@ -1,3 +1,4 @@
+import { WhatsAppHandoff } from "@/app/whatsapp-handoff";
 import Link from "next/link";
 import {
   ProspectCategory,
@@ -288,12 +289,11 @@ function BoardCard({ prospect }: { prospect: ProspectRow }) {
       prospect.status as keyof typeof prospectStatusBadgeClass
     ] ?? "bg-stone-200 text-stone-700";
   return (
-    <Link
-      href={`/prospects/${prospect.id}`}
+    <article
       className="block rounded-lg border border-stone-300 bg-[#17191c] p-3 transition hover:border-indigo-500"
     >
       <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-semibold leading-snug">{prospect.name}</p>
+        <Link href={`/prospects/${prospect.id}`} className="text-sm font-semibold leading-snug hover:underline">{prospect.name}</Link>
         {prospect.rating !== null ? (
           <span className="flex shrink-0 items-center gap-0.5 text-xs font-semibold text-amber-800">
             <IconStar className="h-3 w-3" />
@@ -337,6 +337,11 @@ function BoardCard({ prospect }: { prospect: ProspectRow }) {
           </span>
         ) : null}
       </div>
-    </Link>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Link href={`/prospects/${prospect.id}`} className="text-xs text-indigo-300 underline">Abrir ficha</Link>
+        {prospect.demoPageUrl !== null && <a href={prospect.demoPageUrl} target="_blank" rel="noreferrer" className="rounded bg-indigo-600 px-2 py-1 text-xs font-semibold text-white">Ver muestra</a>}
+      </div>
+      <div className="mt-2"><WhatsAppHandoff prospectId={prospect.id} /></div>
+    </article>
   );
 }
