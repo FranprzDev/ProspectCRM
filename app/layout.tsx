@@ -21,12 +21,16 @@ export const viewport: Viewport = {
 };
 
 async function isAuthenticated(): Promise<boolean> {
-  const { env } = await getCloudflareContext({ async: true });
-  const secret = env.SESSION_SECRET;
-  if (!secret) return false;
-  const store = await cookies();
-  const token = store.get(sessionCookieName)?.value;
-  return verifySessionToken(token, secret);
+  try {
+    const { env } = await getCloudflareContext({ async: true });
+    const secret = env.SESSION_SECRET;
+    if (!secret) return false;
+    const store = await cookies();
+    const token = store.get(sessionCookieName)?.value;
+    return await verifySessionToken(token, secret);
+  } catch {
+    return false;
+  }
 }
 
 export default async function RootLayout({
