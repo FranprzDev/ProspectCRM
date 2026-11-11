@@ -126,3 +126,26 @@ export const activityTypeLabels: Record<ActivityType, string> = {
   [ActivityType.EmailLogged]: "Mail registrado",
   [ActivityType.DemoPageSet]: "Página de muestra",
 };
+
+export const ImprovementStatus = {
+  Proposed: "proposed",
+  Requested: "requested",
+  Done: "done",
+  Dismissed: "dismissed",
+} as const;
+
+export type ImprovementStatus = (typeof ImprovementStatus)[keyof typeof ImprovementStatus];
+
+export const improvementStatusLabels: Record<ImprovementStatus, string> = {
+  [ImprovementStatus.Proposed]: "Propuesta",
+  [ImprovementStatus.Requested]: "Pedida",
+  [ImprovementStatus.Done]: "Hecha",
+  [ImprovementStatus.Dismissed]: "Descartada",
+};
+
+export const improvementStatusBadgeClass: Record<ImprovementStatus, string> = {
+  [ImprovementStatus.Proposed]: "bg-indigo-200 text-indigo-700",
+  [ImprovementStatus.Requested]: "bg-amber-100 text-amber-800",
+  [ImprovementStatus.Done]: "bg-green-100 text-green-800",
+  [ImprovementStatus.Dismissed]: "bg-stone-300 text-stone-600",
+};
