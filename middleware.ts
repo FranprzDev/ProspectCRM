@@ -21,7 +21,12 @@ function isPublicPath(pathname: string): boolean {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  if (pathname === "/786-barbershop-web" || pathname === "/786-barbershop-web/") {
+  if (
+    pathname === "/786-barbershop-web" ||
+    pathname === "/786-barbershop-web/" ||
+    pathname === "/clinical-veterinary-medication-arlequin-web" ||
+    pathname === "/clinical-veterinary-medication-arlequin-web/"
+  ) {
     return new NextResponse("404", {
       status: 404,
       headers: {
