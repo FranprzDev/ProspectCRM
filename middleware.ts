@@ -15,6 +15,7 @@ function isPublicPath(pathname: string): boolean {
   if (pathname.startsWith("/icons/")) return true;
   if (pathname.startsWith("/api/auth/")) return true;
   if (pathname.startsWith("/api/agent/")) return true;
+  if (pathname.startsWith("/api/mcp")) return true;
   if (pathname.startsWith("/_next/")) return true;
   return false;
 }
