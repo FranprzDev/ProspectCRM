@@ -11,6 +11,7 @@ import {
   WebsiteStatus,
 } from "@/lib/domain/enums";
 import { listProspectRows } from "@/lib/services/prospect-service";
+import { countProspectKpis } from "@/lib/db/prospect-repository";
 import {
   IconMail,
   IconMapPin,
@@ -54,23 +55,18 @@ export default async function ProspectsPage({
   const filtersActive =
     q !== "" || categoria !== "" || web !== "" || conDemo || conEmail;
 
-  const allRows = await listProspectRows();
-  const kpis = {
-    total: allRows.length,
-    contactables: allRows.filter((p) => p.phone !== null || p.email !== null)
-      .length,
-    withDemo: allRows.filter((p) => p.demoPageUrl !== null).length,
-    withEmail: allRows.filter((p) => p.email !== null).length,
-  };
-
+  const PAGE_LIMIT = 300;
+  const kpis = await countProspectKpis();
   const rows = filtersActive
     ? await listProspectRows(undefined, q === "" ? undefined : q, {
         category: categoria === "" ? undefined : categoria,
         websiteStatus: web === "" ? undefined : web,
         hasDemo: conDemo || undefined,
         hasEmail: conEmail || undefined,
+        limit: PAGE_LIMIT,
       })
-    : allRows;
+    : await listProspectRows(undefined, undefined, { limit: PAGE_LIMIT });
+  const capped = rows.length === PAGE_LIMIT;
 
   const byStatus = new Map<string, ProspectRow[]>();
   for (const status of prospectStatusOrder) byStatus.set(status, []);
@@ -91,6 +87,13 @@ export default async function ProspectsPage({
           {kpis.withEmail} con email
         </span>
       </div>
+
+      {capped ? (
+        <p className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+          Mostrando los {rows.length} más recientes de {kpis.total}. Usá la
+          búsqueda o los filtros para ver otros.
+        </p>
+      ) : null}
 
       <form
         action="/prospects"
