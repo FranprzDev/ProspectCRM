@@ -6,6 +6,7 @@ import { useState } from "react";
 export function LoginForm() {
   const router = useRouter();
   const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -16,7 +17,7 @@ export function LoginForm() {
     const response = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password }),
+      body: JSON.stringify({ password, remember }),
     });
     if (response.ok) {
       router.push("/");
@@ -42,6 +43,16 @@ export function LoginForm() {
         autoFocus
         className="rounded-md border border-stone-300 px-3 py-3 text-base focus:border-indigo-500 focus:outline-none"
       />
+      <label className="flex items-center gap-2 text-sm text-stone-600">
+        <input
+          id="remember"
+          type="checkbox"
+          checked={remember}
+          onChange={(event) => setRemember(event.target.checked)}
+          className="h-4 w-4 accent-indigo-600"
+        />
+        Recordarme en este dispositivo
+      </label>
       {error !== null && <p className="text-sm text-red-600">{error}</p>}
       <button
         type="submit"
