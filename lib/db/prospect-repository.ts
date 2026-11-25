@@ -1,4 +1,4 @@
-import { and, count, desc, eq, inArray, isNotNull, like, ne, SQL } from "drizzle-orm";
+import { and, count, desc, eq, inArray, isNotNull, like, ne, or, SQL } from "drizzle-orm";
 import { getDb } from "./index";
 import { ActivityRow, EmailRow, ProspectRow, prospects } from "./schema";
 
@@ -40,6 +40,7 @@ export interface ProspectListFilters {
   hasDemo?: boolean;
   hasEmail?: boolean;
   category?: string;
+  limit?: number;
 }
 
 export async function listProspects(
@@ -56,7 +57,47 @@ export async function listProspects(
   if (filters.hasEmail) conditions.push(isNotNull(prospects.email));
   if (filters.category) conditions.push(eq(prospects.category, filters.category));
   const where = conditions.length > 0 ? and(...conditions) : undefined;
-  return db.select().from(prospects).where(where).orderBy(desc(prospects.createdAt));
+  const query = db
+    .select()
+    .from(prospects)
+    .where(where)
+    .orderBy(desc(prospects.createdAt))
+    .$dynamic();
+  if (filters.limit) return query.limit(filters.limit);
+  return query;
+}
+
+export interface ProspectKpis {
+  total: number;
+  contactables: number;
+  withDemo: number;
+  withEmail: number;
+}
+
+export async function countProspectKpis(): Promise<ProspectKpis> {
+  const db = await getDb();
+  const active = ne(prospects.status, "EXCLUDED");
+  const [total, contactables, withDemo, withEmail] = await Promise.all([
+    db.select({ value: count() }).from(prospects).where(active),
+    db
+      .select({ value: count() })
+      .from(prospects)
+      .where(and(active, or(isNotNull(prospects.phone), isNotNull(prospects.email)))),
+    db
+      .select({ value: count() })
+      .from(prospects)
+      .where(and(active, isNotNull(prospects.demoPageUrl))),
+    db
+      .select({ value: count() })
+      .from(prospects)
+      .where(and(active, isNotNull(prospects.email))),
+  ]);
+  return {
+    total: total[0]?.value ?? 0,
+    contactables: contactables[0]?.value ?? 0,
+    withDemo: withDemo[0]?.value ?? 0,
+    withEmail: withEmail[0]?.value ?? 0,
+  };
 }
 
 export async function countByWebsiteStatus(): Promise<Record<string, number>> {
