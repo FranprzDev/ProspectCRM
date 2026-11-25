@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import {
   createSessionToken,
+  rememberMaxAgeSeconds,
   sessionCookieName,
   sessionMaxAgeSeconds,
   verifyPassword,
@@ -17,9 +18,14 @@ export async function POST(request: NextRequest) {
     );
   }
   let password: string;
+  let remember = false;
   try {
-    const body = (await request.json()) as { password?: unknown };
+    const body = (await request.json()) as {
+      password?: unknown;
+      remember?: unknown;
+    };
     password = typeof body.password === "string" ? body.password : "";
+    remember = body.remember === true;
   } catch {
     password = "";
   }
@@ -32,14 +38,15 @@ export async function POST(request: NextRequest) {
     await recordLoginAttempt(ip);
     return NextResponse.json({ error: "Contraseña incorrecta" }, { status: 401 });
   }
-  const token = await createSessionToken(env.SESSION_SECRET);
+  const maxAge = remember ? rememberMaxAgeSeconds : sessionMaxAgeSeconds;
+  const token = await createSessionToken(env.SESSION_SECRET, maxAge);
   const response = NextResponse.json({ ok: true });
   response.cookies.set(sessionCookieName, token, {
     httpOnly: true,
     secure: true,
     sameSite: "lax",
     path: "/",
-    maxAge: sessionMaxAgeSeconds,
+    maxAge,
   });
   return response;
 }

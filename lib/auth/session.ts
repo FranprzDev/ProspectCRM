@@ -37,6 +37,7 @@ async function hmacSign(secret: string, payload: string): Promise<string> {
 
 export const sessionCookieName = "pcrm_session";
 export const sessionMaxAgeSeconds = 60 * 60 * 24 * 7;
+export const rememberMaxAgeSeconds = 60 * 60 * 24 * 90;
 
 export async function verifyPassword(
   password: string,
@@ -62,9 +63,12 @@ export async function verifyPassword(
   return timingSafeEqual(toHex(derived), parts[2]);
 }
 
-export async function createSessionToken(secret: string): Promise<string> {
+export async function createSessionToken(
+  secret: string,
+  maxAgeSeconds: number = sessionMaxAgeSeconds
+): Promise<string> {
   const payload = toBase64Url(
-    JSON.stringify({ sub: "admin", exp: Date.now() + sessionMaxAgeSeconds * 1000 })
+    JSON.stringify({ sub: "admin", exp: Date.now() + maxAgeSeconds * 1000 })
   );
   const signature = await hmacSign(secret, payload);
   return `${payload}.${signature}`;
