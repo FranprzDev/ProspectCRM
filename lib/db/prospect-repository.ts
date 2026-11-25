@@ -67,6 +67,18 @@ export async function listProspects(
   return query;
 }
 
+export async function countByStatus(): Promise<Record<string, number>> {
+  const db = await getDb();
+  const rows = await db
+    .select({ status: prospects.status, value: count() })
+    .from(prospects)
+    .where(ne(prospects.status, "EXCLUDED"))
+    .groupBy(prospects.status);
+  const result: Record<string, number> = {};
+  for (const row of rows) result[row.status] = row.value;
+  return result;
+}
+
 export interface ProspectKpis {
   total: number;
   contactables: number;

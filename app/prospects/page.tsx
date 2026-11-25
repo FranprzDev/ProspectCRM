@@ -11,7 +11,7 @@ import {
   WebsiteStatus,
 } from "@/lib/domain/enums";
 import { listProspectRows } from "@/lib/services/prospect-service";
-import { countProspectKpis } from "@/lib/db/prospect-repository";
+import { countByStatus, countProspectKpis } from "@/lib/db/prospect-repository";
 import {
   IconMail,
   IconMapPin,
@@ -56,7 +56,10 @@ export default async function ProspectsPage({
     q !== "" || categoria !== "" || web !== "" || conDemo || conEmail;
 
   const PAGE_LIMIT = 300;
-  const kpis = await countProspectKpis();
+  const [kpis, statusCounts] = await Promise.all([
+    countProspectKpis(),
+    countByStatus(),
+  ]);
   const rows = filtersActive
     ? await listProspectRows(undefined, q === "" ? undefined : q, {
         category: categoria === "" ? undefined : categoria,
@@ -204,7 +207,7 @@ export default async function ProspectsPage({
                       {prospectStatusLabels[status]}
                     </h2>
                     <span className="rounded-full bg-stone-200 px-2 py-0.5 text-xs font-bold tabular-nums text-stone-700">
-                      {list.length}
+                      {statusCounts[status] ?? 0}
                     </span>
                   </header>
                   <div className="flex flex-col gap-2 overflow-y-auto px-2 pb-2">
