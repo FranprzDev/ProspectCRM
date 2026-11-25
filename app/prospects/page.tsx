@@ -56,20 +56,31 @@ export default async function ProspectsPage({
     q !== "" || categoria !== "" || web !== "" || conDemo || conEmail;
 
   const PAGE_LIMIT = 300;
+  const COLUMN_LIMIT = 50;
   const [kpis, statusCounts] = await Promise.all([
     countProspectKpis(),
     countByStatus(),
   ]);
-  const rows = filtersActive
-    ? await listProspectRows(undefined, q === "" ? undefined : q, {
-        category: categoria === "" ? undefined : categoria,
-        websiteStatus: web === "" ? undefined : web,
-        hasDemo: conDemo || undefined,
-        hasEmail: conEmail || undefined,
-        limit: PAGE_LIMIT,
-      })
-    : await listProspectRows(undefined, undefined, { limit: PAGE_LIMIT });
-  const capped = rows.length === PAGE_LIMIT;
+  let rows: ProspectRow[];
+  let capped: boolean;
+  if (filtersActive) {
+    rows = await listProspectRows(undefined, q === "" ? undefined : q, {
+      category: categoria === "" ? undefined : categoria,
+      websiteStatus: web === "" ? undefined : web,
+      hasDemo: conDemo || undefined,
+      hasEmail: conEmail || undefined,
+      limit: PAGE_LIMIT,
+    });
+    capped = rows.length === PAGE_LIMIT;
+  } else {
+    const perColumn = await Promise.all(
+      prospectStatusOrder.map((status) =>
+        listProspectRows(status, undefined, { limit: COLUMN_LIMIT })
+      )
+    );
+    rows = perColumn.flat();
+    capped = perColumn.some((list) => list.length === COLUMN_LIMIT);
+  }
 
   const byStatus = new Map<string, ProspectRow[]>();
   for (const status of prospectStatusOrder) byStatus.set(status, []);
@@ -93,8 +104,9 @@ export default async function ProspectsPage({
 
       {capped ? (
         <p className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-          Mostrando los {rows.length} más recientes de {kpis.total}. Usá la
-          búsqueda o los filtros para ver otros.
+          {filtersActive
+            ? `Mostrando ${rows.length} resultados (puede haber más de ${kpis.total} totales). Usá la búsqueda o los filtros para acotar.`
+            : `Mostrando los últimos ${COLUMN_LIMIT} por estado, de ${kpis.total} prospectos. Usá la búsqueda o los filtros para ver otros.`}
         </p>
       ) : null}
 
